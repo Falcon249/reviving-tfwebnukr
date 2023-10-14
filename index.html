@@ -1,6 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+(function() {
+  // Disable opening developer tools with F12
+  document.addEventListener("keydown", function(event) {
+    if (event.keyCode === 123) {
+      event.preventDefault();
+    }
+  });
+
+  // Disable opening developer tools with Ctrl+Shift+C
+  document.addEventListener("keyup", function(event) {
+    if (event.keyCode === 67 && event.ctrlKey && event.shiftKey) {
+      event.preventDefault();
+    }
+  });
+
+  // Disable opening developer tools with other keyboard shortcuts
+  document.addEventListener("keydown", function(event) {
+    if (event.keyCode === 73 && event.ctrlKey && event.altKey) {
+      event.preventDefault();
+    }
+  });
+})();
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
