@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Bot Control Panel</title>
+</head>
+<body>
+
+<script>
+    // Function to send a message through a Discord bot
+    async function sendBotMessage(token, message) {
+        try {
+            // Create a bot client
+            const client = new Discord.Client();
+
+            client.on('ready', () => {
+                console.log(`We have logged in as ${client.user}`);
+            });
+
+            client.on('message', (message) => {
+                if (message.author === client.user) {
+                    return;
+                }
+            });
+
+            await client.login(token);
+            await client.connect();
+
+            while (true) {
+                // Send messages until the user decides to exit
+                message = prompt("Enter the message you want to send via the bot (type 'exit' to quit): ");
+                if (message.toLowerCase() === 'exit') {
+                    break;
+                }
+
+                // Send the message
+                const channel = await client.channels.fetch('1141837051415769198');  // Replace with your channel ID
+                await channel.send(message);
+                console.log("Message sent successfully!");
+            }
+
+            await client.close();
+        } catch (e) {
+            console.log(`Failed to send message: ${e}`);
+        }
+    }
+
+    // Function to display the "hm..." menu
+    function sendMessageHm(token) {
+        while (true) {
+            const message = prompt("Enter the message you want to send via the bot (type 'exit' to quit): ");
+            if (message.toLowerCase() === 'exit') {
+                break;
+            }
+            sendBotMessage(token, message);
+        }
+    }
+
+    // Modify the main function to include the "hm..." menu option
+    function main() {
+        const menuText = `
+                 _
+__      __  ___ | |__   _ __   _   _ | | __ _ __ 
+\\ \\ /\\ / / / _ \\| '_ \\ | '_ \\ | | | || |/ /| '__|
+ \\ V  V / |  __/| |_) || | | || |_| ||   < | |   
+  \\_/\\_/   \\___||_.__/ |_| |_| \\__,_||_|\\_\\|_|   
+                                                 
+    `;
+        const suggestionText = "If you want to suggest stuff, add me on Discord: falcon7834 also join our discord! https://discord.gg/eFc5nZSSbC";
+
+        console.log(menuText);
+        console.log(suggestionText);
+
+        const option = prompt("Select an option (main, suggest, fakenukrv2, featureme, hm...): ");
+
+        if (option === "main") {
+            const webhookUrl = "https://discord.com/api/webhooks/1145419676231401572/IvqLz3KqAe39tEWIHNhi3fEsMBaSmBHr2S76qHwddl2HM9Enyf0THMHru5mLuAzKondr";
+            sendMessageSubmenu(webhookUrl);
+        } else if (option === "suggest") {
+            const webhookUrlDuplicate = "https://discord.com/api/webhooks/1144721438180393060/iuGIYrdix5G0cySvteWMMwN60rx21RLX6qjrgbrMmkxr0xXnDppJP2Ei2JzwxkGtK77J";
+            sendMessageSubmenu(webhookUrlDuplicate);
+        } else if (option === "fakenukrv2") {
+            const webhookUrlFakenukrv2 = "https://discord.com/api/webhooks/1144721438180393060/iuGIYrdix5G0cySvteWMMwN60rx21RLX6qjrgbrMmkxr0xXnDppJP2Ei2JzwxkGtK77J";
+            sendMessageSubmenu(webhookUrlFakenukrv2, true);
+        } else if (option === "featureme") {
+            const webhookUrlFeatureme = "https://discord.com/api/webhooks/1144721438180393060/iuGIYrdix5G0cySvteWMMwN60rx21RLX6qjrgbrMmkxr0xXnDppJP2Ei2JzwxkGtK77J";
+            sendMessageSubmenu(webhookUrlFeatureme);
+        } else if (option === "hm...") {
+            const botToken = "####";  // Replace with your bot token
+            sendMessageHm(botToken);
+        } else {
+            console.log("Invalid option.");
+        }
+    }
+
+    if (typeof Discord === "undefined") {
+        console.log("Discord library not loaded. Make sure to include it in your HTML.");
+    } else {
+        main();
+    }
+</script>
+
+</body>
+</html>
